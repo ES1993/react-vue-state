@@ -25,7 +25,7 @@ class ComputedState<V = any> extends State<V> {
     try {
       return this.func.call(this.funcThis);
     } catch (error) {
-      Config.onError(`computed => ${this.func.name} => ${error}`);
+      Config.onError(error, this.func.name, "computed");
       return this.value;
     }
   };

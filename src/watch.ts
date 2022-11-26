@@ -34,11 +34,11 @@ export class Watch<W extends { [k: string]: (...args: any[]) => any } = any> {
       const res = func.call(this.context.funcThis, newValue, ...args);
       if (isAsyncFunction(res)) {
         return (res as Promise<any>).catch((error) => {
-          Config.onError(`methods ${func.name} => ${error}`);
+          Config.onError(error, func.name, "watch");
         });
       }
     } catch (error) {
-      Config.onError(`watch => ${func.name} => ${error}`);
+      Config.onError(error, func.name, "watch");
     }
   };
 }

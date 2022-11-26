@@ -52,7 +52,7 @@ export class Methods<M extends { [K: string]: (...args: any[]) => any } = any> {
       if (isAsyncFunction(res)) {
         return (res as Promise<any>)
           .catch((error) => {
-            Config.onError(`methods ${func.name} => ${error}`);
+            Config.onError(error, func.name, "methods");
           })
           .finally(() => {
             methodsState.setValue(false);
@@ -62,7 +62,7 @@ export class Methods<M extends { [K: string]: (...args: any[]) => any } = any> {
         return res;
       }
     } catch (error) {
-      Config.onError(`methods => ${func.name} => ${error}`);
+      Config.onError(error, func.name, "methods");
     }
   };
 }
