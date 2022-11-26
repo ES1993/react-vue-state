@@ -17,6 +17,9 @@ export class Data<D = any> {
   };
 
   constructor(context: Context, public data: D) {
+    if ("setData" in data) {
+      throw new Error(`can not be used [setData] as key`);
+    }
     for (const key in data) {
       this.state[key] = new DataState(data[key]);
     }

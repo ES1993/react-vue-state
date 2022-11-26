@@ -20,6 +20,9 @@ export class Methods<M extends { [K: string]: (...args: any[]) => any } = any> {
   func = {} as { [K: string]: (...args: any[]) => any };
 
   constructor(private context: Context, public methods: M) {
+    if ("setData" in methods) {
+      throw new Error(`can not be used [setData] as key`);
+    }
     for (const key in methods) {
       if (key in context.data.state || key in context.computed.state) {
         throw new Error(

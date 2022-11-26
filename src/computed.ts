@@ -58,6 +58,9 @@ export class Computed<C extends { [K: string]: () => any } = any> {
   };
 
   constructor(context: Context, public computed: C) {
+    if ("setData" in computed) {
+      throw new Error(`can not be used [setData] as key`);
+    }
     for (const key in computed) {
       if (key in context.data.state) {
         throw new Error(`"data" and "computed" has the same key:[${key}]`);
