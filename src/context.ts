@@ -58,7 +58,7 @@ export class Context<
       try {
         return typeof state === "function" ? state(this.funcThis) : state;
       } catch (error) {
-        Config.onError(`setData => ${error}`);
+        Config.onError(error, "setData", "context");
         return {} as Partial<D["data"]>;
       }
     })();
