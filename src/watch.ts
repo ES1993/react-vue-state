@@ -1,6 +1,7 @@
 import { Config } from "./config";
 import { Context } from "./context";
 import { Data } from "./data";
+import { isAsyncFunction } from "./util";
 
 export class Watch<W extends { [k: string]: (...args: any[]) => any } = any> {
   constructor(private context: Context<Data>, watch: W) {
@@ -16,7 +17,7 @@ export class Watch<W extends { [k: string]: (...args: any[]) => any } = any> {
     }
   }
 
-  private handFunc = async (
+  private handFunc = (
     key: string,
     func: (...args: any[]) => any,
     ...args: any[]
@@ -30,7 +31,12 @@ export class Watch<W extends { [k: string]: (...args: any[]) => any } = any> {
           return this.context.computed.state[key].getValue();
         }
       })();
-      await func.call(this.context.funcThis, newValue, ...args);
+      const res = func.call(this.context.funcThis, newValue, ...args);
+      if (isAsyncFunction(res)) {
+        return (res as Promise<any>).catch((error) => {
+          Config.onError(`methods ${func.name} => ${error}`);
+        });
+      }
     } catch (error) {
       Config.onError(`watch => ${func.name} => ${error}`);
     }
