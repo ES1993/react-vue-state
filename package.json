@@ -6,6 +6,10 @@
     "react",
     "state"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ES1993/react-vue-state"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
