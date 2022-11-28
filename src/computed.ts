@@ -2,6 +2,7 @@ import { Config } from "./config";
 import { Context } from "./context";
 import { Data } from "./data";
 import { State } from "./state";
+import { isAsyncFunction } from "./util";
 
 class ComputedState<V = any> extends State<V> {
   private dirty = true;
@@ -23,9 +24,13 @@ class ComputedState<V = any> extends State<V> {
 
   private catchFunc = () => {
     try {
-      return this.func.call(this.funcThis);
+      const res = this.func.call(this.funcThis);
+      if (isAsyncFunction(res)) {
+        throw new Error('"computed" cannot contain async functions');
+      }
+      return res;
     } catch (error) {
-      Config.onError(error, this.func.name, "computed");
+      Config.onError(error);
       return this.value;
     }
   };

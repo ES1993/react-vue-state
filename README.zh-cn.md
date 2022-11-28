@@ -42,7 +42,7 @@ export default function () {
 # 详情
 
 ```typescript
-import { createStore, useStore, Config } from "react-vue-state";
+import { createStore, useStore, useFunc, Config } from "react-vue-state";
 
 /**
  * 覆盖全局的错误处理
@@ -50,8 +50,8 @@ import { createStore, useStore, Config } from "react-vue-state";
  * funcName 发生错误的函数名称
  * kind 在computed,methods,watch,setData那个中发生的错误
  */
-Config.onError = (error: any, funcName: string, kind: string) => {
-  console.log(kind, funcName, error);
+Config.onError = (error: any) => {
+  console.log(error);
   // do something
 };
 
@@ -140,6 +140,14 @@ export default function () {
     setData,
   } = useStore(store);
 
+  /**
+   * 任何函数在运行时都可能会产生错误
+   * useFunc不仅可以捕获错误还能保证组件在ReRender后地址不会发生改变
+   */
+  const task = useFunc(async () => {
+    await asyncFunc();
+  });
+
   return (
     <div>
       <div>asyncFuncRunning:{`${asyncFuncRunning}`}</div>
@@ -163,7 +171,7 @@ export default function () {
 
       <button
         onClick={() => {
-          asyncFunc();
+          task();
         }}
       >
         test

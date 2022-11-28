@@ -1,3 +1,3 @@
 export { createStore } from "./store";
-export { useStore } from "./use";
+export { useStore, useFunc } from "./use";
 export { Config } from "./config";

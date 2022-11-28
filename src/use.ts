@@ -1,9 +1,11 @@
 import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import { Computed } from "./computed";
+import { Config } from "./config";
 import { Context } from "./context";
 import { Data } from "./data";
 import { Methods } from "./methods";
 import { Store } from "./store";
+import { isAsyncFunction } from "./util";
 import { Watch } from "./watch";
 
 type ObjFuncToObj<T extends Record<string, () => any>> = {
@@ -106,4 +108,27 @@ export const useStore = <
   }, []);
 
   return proxy;
+};
+
+export const useFunc = <F extends (...args: any) => any>(func: F) => {
+  const funcRef = useRef<F>(func);
+  funcRef.current = useMemo(() => func, [func]);
+
+  const funcWrap = useRef<any>();
+  if (!funcWrap.current) {
+    funcWrap.current = (...args: any[]) => {
+      try {
+        const res = funcRef.current(...args);
+        if (isAsyncFunction(res)) {
+          return (res as Promise<any>).catch(Config.onError);
+        } else {
+          return res;
+        }
+      } catch (error) {
+        Config.onError(error);
+      }
+    };
+  }
+
+  return funcWrap.current as F;
 };

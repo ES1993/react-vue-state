@@ -42,7 +42,7 @@ export default function () {
 # detail
 
 ```typescript
-import { createStore, useStore, Config } from "react-vue-state";
+import { createStore, useStore, useFunc, Config } from "react-vue-state";
 
 /**
  * Override global error handling
@@ -50,8 +50,8 @@ import { createStore, useStore, Config } from "react-vue-state";
  * funcName: The name of the function where the error occurred
  * kind: Errors that occur in computed, methods, watch, setData
  */
-Config.onError = (error: any, funcName: string, kind: string) => {
-  console.log(kind, funcName, error);
+Config.onError = (error: any) => {
+  console.log(kind);
   // do something
 };
 
@@ -140,6 +140,14 @@ export default function () {
     setData,
   } = useStore(store);
 
+  /**
+   * Any function may generate an error at runtime
+   * "useFunc" can not only catch errors but also ensure that the address of the component will not change after ReRender
+   */
+  const task = useFunc(async () => {
+    await asyncFunc();
+  });
+
   return (
     <div>
       <div>asyncFuncRunning:{`${asyncFuncRunning}`}</div>
@@ -163,7 +171,7 @@ export default function () {
 
       <button
         onClick={() => {
-          asyncFunc();
+          task();
         }}
       >
         test

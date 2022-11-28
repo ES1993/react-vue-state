@@ -1,4 +1,3 @@
-import { Config } from "./config";
 import { Context } from "./context";
 import { State } from "./state";
 import { isAsyncFunction } from "./util";
@@ -48,24 +47,17 @@ export class Methods<M extends { [K: string]: (...args: any[]) => any } = any> {
     func: (...args: any) => any,
     ...args: any[]
   ) => {
-    try {
-      const methodsState = this.state[`${key}Running`] as MethodsState;
-      methodsState.setValue(true);
-      const res = func.call(this.context.funcThis, ...args);
-      if (isAsyncFunction(res)) {
-        return (res as Promise<any>)
-          .catch((error) => {
-            Config.onError(error, func.name, "methods");
-          })
-          .finally(() => {
-            methodsState.setValue(false);
-          });
-      } else {
+    const methodsState = this.state[`${key}Running`] as MethodsState;
+    methodsState.setValue(true);
+    const res = func.call(this.context.funcThis, ...args);
+
+    if (isAsyncFunction(res)) {
+      return (res as Promise<any>).finally(() => {
         methodsState.setValue(false);
-        return res;
-      }
-    } catch (error) {
-      Config.onError(error, func.name, "methods");
+      });
+    } else {
+      methodsState.setValue(false);
+      return res;
     }
   };
 }
