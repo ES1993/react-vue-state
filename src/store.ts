@@ -32,13 +32,16 @@ export const createStore = <
 >(
   base?: {
     data?: D;
-    computed?: C & ThisType<D>;
-  },
+    computed?: C;
+  } & ThisType<D & ObjFuncToObj<C>>,
   ext?: {
     methods?: M;
     watch?: WD & WC;
   } & ThisType<
-    D & ObjFuncToObj<C> & M & Pick<Context<Data<D>, Computed<C>, Methods<M>>, "setData">
+    D &
+      ObjFuncToObj<C> &
+      M &
+      Pick<Context<Data<D>, Computed<C>, Methods<M>>, "setData">
   >
 ) => {
   const context = new Context<Data<D>, Computed<C>, Methods<M>>();

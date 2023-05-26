@@ -13,6 +13,9 @@ class ComputedState<V = any> extends State<V> {
         if (key in this.context.data.state) {
           this.context.data.state[key].on(this.update);
         }
+        if (key in this.context.computed.state) {
+          this.context.computed.state[key].on(this.update);
+        }
         return this.context.funcThis[key];
       },
     }
